@@ -48,8 +48,13 @@ function loadData() {
         });
 
     
+    //handle errors in case if there are no wikipedia articles. jsonp doesn't have built-in error handling, hence use setTimeout(), if the request takes too long
+    var setWikiTimeout = setTimeout(function(){
+        $wikiElem.text("Failed to provide wikipedia page");
+    }, 8000);
+
     //retrieving articles related to the new city from wikipedia using mediawiki API and jsonp to request data from a server residing in a different domain than the client.
-    var wikiURL = "https://en.wikipedia.org/w/api.php?action=opensearch&search=SanDiego&format=json&callback=wikiCallBack"
+    var wikiURL = "https://en.wikipedia.org/w/api.php?action=opensearch&search="+ cityVal + "&format=json&callback=wikiCallBack";
     $.ajax({
         type: "GET",
         url: wikiURL,
@@ -59,12 +64,10 @@ function loadData() {
             console.log("data response",data);
             
             for(var i=0; i < data.length; i++){
-
               $wikiElem.append('<li>' + '<a href = " '+data[3][i]+' " + target = + "_blank"  + > ' + data[1][i] + '</a>'+ '<p>' +data[2][i] +'</p>'+ '</li>');
-            }
+            };
+            clearTimeout(setWikiTimeout);
         },
-        error: function (errorMessage) {
-        }
     });
     
     $("body").append('<img class="bgimg" src="' + streetViewURL + '"/>');
